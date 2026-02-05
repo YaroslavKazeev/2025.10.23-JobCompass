@@ -1,12 +1,13 @@
 import { useNavigate } from "react-router-dom";
+import handleKeyDown from "../../util/handleKeyDown";
 
-const LoginSuccessPopup = ({ onClose }) => {
+export default function LoginSuccessPopup({ onClose }) {
   const navigate = useNavigate();
 
-  const handleContinue = () => {
+  function handleContinue() {
     onClose(); // Close the popup
     navigate("/"); // Redirect to home page
-  };
+  }
 
   return (
     <div className="popup-overlay">
@@ -14,13 +15,16 @@ const LoginSuccessPopup = ({ onClose }) => {
         <h2>Success!</h2>
         <p>You successfully logged in!</p>
         <div className="popup-buttons">
-          <button className="btn-primary" onClick={handleContinue}>
+          <button
+            className="btn-primary"
+            autoFocus
+            onClick={handleContinue}
+            onKeyDown={(e) => handleKeyDown(e, handleContinue)}
+          >
             Continue
           </button>
         </div>
       </div>
     </div>
   );
-};
-
-export default LoginSuccessPopup;
+}

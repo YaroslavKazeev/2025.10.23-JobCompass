@@ -9,7 +9,7 @@ import LoginSuccessPopup from "../SuccessPopup/LoginSuccessPopup";
 import SignupSuccessPopup from "../SuccessPopup/SignupSuccessPopup";
 import "./AuthForms.css";
 
-const AuthForms = () => {
+export default function AuthForms() {
   const navigate = useNavigate();
   const [tab, setTab] = useState("login");
   const [successPopup, setSuccessPopup] = useState(false);
@@ -65,6 +65,4 @@ const AuthForms = () => {
       )}
     </div>
   );
-};
-
-export default AuthForms;
+}

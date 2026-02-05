@@ -83,3 +83,9 @@
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
 }
+
+.dropdown-button-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

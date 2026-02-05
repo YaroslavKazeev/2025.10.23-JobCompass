@@ -4,7 +4,7 @@ export default function useTravelData() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const calculateBatchTravel = async (homeAddress, workCities) => {
+  async function calculateBatchTravel(homeAddress, workCities) {
     setIsLoading(true);
     setError(null);
     try {
@@ -22,7 +22,7 @@ export default function useTravelData() {
       setIsLoading(false);
       throw e;
     }
-  };
+  }
 
   return { calculateBatchTravel, isLoading, error };
 }

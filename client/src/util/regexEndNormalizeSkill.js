@@ -20,7 +20,7 @@
  * - normalizedSkill: the input with hyphens, slashes and whitespace collapsed to single
  *   spaces (useful for normalization and comparisons).
  */
-export function regexEndNormalizeSkill(skill) {
+export default function regexEndNormalizeSkill(skill) {
   let normalizedSkill = skill;
   normalizedSkill = normalizedSkill
     .toLowerCase()

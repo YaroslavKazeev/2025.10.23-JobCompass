@@ -1,6 +1,6 @@
 import { defaultUser } from "../data/defaultUser";
 
-export function userReducer(state, action) {
+export default function userReducer(state, action) {
   switch (action.type) {
     case "REGISTER":
     case "LOGIN":

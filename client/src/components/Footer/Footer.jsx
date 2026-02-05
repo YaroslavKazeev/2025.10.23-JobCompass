@@ -2,9 +2,9 @@ import "./Footer.css";
 import { Link } from "react-router-dom";
 
 export default function Footer() {
-  const handleBackToTop = () => {
+  function handleBackToTop() {
     window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  }
   return (
     <footer className="footer">
       <div className="footer-inner content-container">

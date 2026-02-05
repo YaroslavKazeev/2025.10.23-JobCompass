@@ -238,8 +238,8 @@ flowchart TD
 ### Frontend (Client)
 
 - **React**: User interface components
-- **Context API**: Global authentication state
-- **Axios**: HTTP client for API requests
+- **Context API**: Global authentication state (UserContext)
+- **fetch / useFetch hook**: HTTP client for API requests (with /api prefix)
 - **React Router**: Protected route handling
 
 ### Backend (Server)

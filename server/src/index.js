@@ -6,37 +6,17 @@ import cron from "node-cron";
 
 import app from "./app.js";
 import { logInfo, logError } from "./util/logging.js";
-import connectNeonDB from "./db/connectNeonDB.js";
+import cleanupDatabase from "./services/cleanupDatabase.js";
+
+/*
+Maintenance & Operations Implementation:
+- Daily Cleanup: Removal of old cache entries and expired data (see cleanupDatabase function below) and Cron jobs for scheduled maintenance tasks
+- Error Monitoring: Comprehensive logging and alerting (see logging utility)
+*/
 
 const port = process.env.PORT;
 if (port == null) {
   logError(new Error("Cannot find a PORT number, did you create a .env file?"));
-}
-
-async function cleanupDatabase() {
-  const { error, connectedClient, endConnection } = await connectNeonDB();
-  if (error) {
-    logError(`DB connection error: ${error.message}`);
-    return;
-  }
-  try {
-    await connectedClient.query(
-      "DELETE FROM user_favorites WHERE job_id NOT IN (SELECT id FROM jobs) OR user_id NOT IN (SELECT id FROM users)",
-    );
-    await connectedClient.query(
-      "DELETE FROM search_string_jobs WHERE job_id NOT IN (SELECT id FROM jobs) OR search_string NOT IN (SELECT search_string FROM search_strings)",
-    );
-    await connectedClient.query(
-      "DELETE FROM jobs WHERE date_posted < NOW() - INTERVAL '1 month' OR (date_posted < NOW() - INTERVAL '1 week' AND id NOT IN (SELECT job_id FROM user_favorites))",
-    );
-    await connectedClient.query(
-      "DELETE FROM search_strings WHERE search_date < NOW() - INTERVAL '1 week'",
-    );
-  } catch (error) {
-    logError(`Unexpected error during database cleanup: ${error.message}`);
-  } finally {
-    await endConnection();
-  }
 }
 
 // Schedule cleanup in format "12 23 * * 4", where:
@@ -57,15 +37,19 @@ cron.schedule(
   },
 );
 
-const startServer = async () => {
+async function startServer() {
   try {
     app.listen(port, () => {
+      (() => {
+        logInfo("Starting database cleanup on server start...");
+        cleanupDatabase();
+      })();
       logInfo(`Server started on port ${port}`);
     });
   } catch (error) {
     logError(error);
   }
-};
+}
 
 /****** Host our client code for Heroku *****/
 /**

@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, cloneElement } from "react";
 import useOutsideClick from "../../hooks/useOutsideClick";
 import "./DropdownFilter.css";
 
@@ -8,6 +8,7 @@ export default function DropdownFilter({
   options,
   activeValues,
   onFilterChange,
+  icon,
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -21,7 +22,10 @@ export default function DropdownFilter({
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
       >
-        <span>{label}</span>
+        <div className="dropdown-button-content">
+          {icon && <span>{cloneElement(icon, { size: 16 })}</span>}
+          <span>{label}</span>
+        </div>
         <svg
           className="dropdown-arrow"
           fill="none"

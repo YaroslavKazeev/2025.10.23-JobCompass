@@ -3,6 +3,7 @@ import { UseUser } from "../../context/UserContext";
 import "./AvatarUploader.css";
 import useFetch from "../../hooks/useFetch";
 import { gif } from "../../assets";
+import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
 
 export default function AvatarUploader({ setAlert }) {
   const { user, dispatch } = UseUser();
@@ -11,7 +12,7 @@ export default function AvatarUploader({ setAlert }) {
   function delayedClearAlert() {
     setTimeout(() => {
       setAlert({ type: "", message: "" });
-    }, 2000);
+    }, DELAYED_CLEAR_INTERVAL);
   }
 
   const { isLoading, error, performFetch } = useFetch(
@@ -36,7 +37,7 @@ export default function AvatarUploader({ setAlert }) {
     }
   }, [error]);
 
-  const handleFileChange = async (e) => {
+  async function handleFileChange(e) {
     const file = e.target.files[0];
     if (!file) {
       return;
@@ -48,7 +49,7 @@ export default function AvatarUploader({ setAlert }) {
       method: "POST",
       body: formData,
     });
-  };
+  }
 
   return (
     <div className="avatar-uploader-container">

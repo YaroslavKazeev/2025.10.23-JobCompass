@@ -1,4 +1,4 @@
-export function validateAddressTextInputs({ text, type = "general" }) {
+export default function validateAddressTextInputs({ text, type = "general" }) {
   if (type === "country" && text !== "Netherlands") {
     return {
       type: "error",

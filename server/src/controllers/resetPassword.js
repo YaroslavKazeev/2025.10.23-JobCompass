@@ -2,7 +2,7 @@ import connectNeonDB from "../db/connectNeonDB.js";
 import bcrypt from "bcrypt";
 import { logError } from "../util/logging.js";
 
-export async function resetPassword(req, res) {
+export default async function resetPassword(req, res) {
   const { token, newPassword } = req.body;
 
   if (!token || !newPassword)

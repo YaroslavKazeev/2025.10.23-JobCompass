@@ -9,7 +9,7 @@ const __dirname = dirname(__filename);
 
 dotenv.config({ path: resolve(__dirname, "../../.env") });
 
-const connectNeonDB = async () => {
+async function connectNeonDB() {
   let error = null;
   let connectedClient = null;
 
@@ -32,7 +32,7 @@ const connectNeonDB = async () => {
     connectionString: process.env.DATABASE_URL,
   });
 
-  const endConnection = async () => {
+  async function endConnection() {
     if (connectedClient) {
       try {
         await connectedClient.end();
@@ -40,7 +40,7 @@ const connectNeonDB = async () => {
         logError(`Error closing database connection: ${err.message}`);
       }
     }
-  };
+  }
 
   try {
     await client.connect();
@@ -56,6 +56,6 @@ const connectNeonDB = async () => {
   }
 
   return { error, connectedClient, endConnection };
-};
+}
 
 export default connectNeonDB;

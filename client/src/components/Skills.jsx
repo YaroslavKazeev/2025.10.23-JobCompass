@@ -1,4 +1,5 @@
 import { UseUser } from "../context/UserContext";
+import { Handshake } from "lucide-react";
 
 export default function Skills({ job }) {
   const { user } = UseUser();
@@ -6,7 +7,8 @@ export default function Skills({ job }) {
 
   return (
     <div className="flex gap-2">
-      <span className="text-sm font-medium mr-2">
+      <Handshake className="job-icon" />
+      <span className="text-sm font-medium mr-2 flex items-center gap-1">
         Skills Match ({Number(job?.skillsMatch)}/{skills.length}):
       </span>
       {job?.skillsInDescription?.map((skill) => (

@@ -1,4 +1,4 @@
-export function validateHouseNoInput({ text }) {
+export default function validateHouseNoInput({ text }) {
   const isNumbersOnly = /^\d+$/.test(text);
   if (text !== "" && !isNumbersOnly) {
     return {

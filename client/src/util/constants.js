@@ -1,0 +1,1 @@
+export const DELAYED_CLEAR_INTERVAL = 2500;

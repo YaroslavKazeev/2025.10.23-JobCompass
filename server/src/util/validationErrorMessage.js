@@ -4,8 +4,8 @@
  */
 
 // errorList should be an array of strings
-const validationErrorMessage = (errorList) => {
+function validationErrorMessage(errorList) {
   return `BAD REQUEST: ${errorList.join(", ")}`;
-};
+}
 
 export default validationErrorMessage;

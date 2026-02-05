@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import DOMPurify from "dompurify";
 import {
   Bus,
   Briefcase,
@@ -47,8 +48,7 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
     },
   );
 
-  const handleFavoriteClick = (e) => {
-    e.stopPropagation();
+  function handleFavoriteClick() {
     if (user.id) {
       performFetch({
         method: "POST",
@@ -58,24 +58,23 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
     } else {
       setShowFavoritesPopup(true);
     }
-  };
+  }
 
-  const handleApplyClick = (e) => {
-    e.stopPropagation();
+  function handleApplyClick() {
     if (user.id) {
       if (onApplyClick) {
-        window.open(job.applyLink || job.url, "_blank");
+        window.open(job.url, "_blank");
       }
       return;
     }
     setShowApplyPopup(true);
-  };
+  }
 
-  const handleLoginRedirect = () => {
+  function handleLoginRedirect() {
     setShowApplyPopup(false);
     setShowFavoritesPopup(false);
     navigate("/login", {});
-  };
+  }
 
   return (
     <li className="job-item">
@@ -107,9 +106,7 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
                 onClick={handleFavoriteClick}
                 disabled={isToggleFavoriteLoading}
                 title={
-                  isInFavorites
-                    ? "Remove from favourites"
-                    : "Save to favourites"
+                  isInFavorites ? "Remove from favorites" : "Save to favorites"
                 }
               >
                 {isToggleFavoriteLoading ? (
@@ -148,14 +145,6 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
                   <span className="job-tag-separator">|</span>
                 </div>
               )}
-              {/* location tag */}
-              {job.display_location && (
-                <div className="job-commute-info">
-                  <MapPin className="job-icon" />
-                  <span className="job-commute">{job.display_location}</span>
-                  <span className="job-tag-separator">|</span>
-                </div>
-              )}
               {/* posting date tag */}
               {job.date_posted &&
                 (() => {
@@ -187,15 +176,31 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
                     </div>
                   );
                 })()}
-
+              {/* location tag */}
+              {job.display_location && (
+                <div className="job-commute-info">
+                  <MapPin className="job-icon" />
+                  <span className="job-commute">{job.display_location}</span>
+                </div>
+              )}
               {/* commute info block*/}
               <div className="job-commute-info">
                 {isTravelLoading ? (
-                  <img src={gif.spinner} alt="Loading..." className="spinner" />
+                  <>
+                    <span className="job-tag-separator">|</span>
+                    <img
+                      src={gif.spinner}
+                      alt="Loading..."
+                      className="spinner"
+                    />
+                  </>
                 ) : (
-                  job.travel_time != null &&
-                  job.least_transfers != null && (
+                  job.travel_time !== null &&
+                  job.travel_time !== undefined &&
+                  job.least_transfers !== null &&
+                  job.least_transfers !== undefined && (
                     <>
+                      <span className="job-tag-separator">|</span>
                       <Bus className="job-icon" />
                       <span className="job-commute">
                         {formatTravelTime(job.travel_time)},{" "}
@@ -207,12 +212,15 @@ export default function JobCard({ job, onApplyClick, isInFavorites }) {
                 )}
               </div>
             </div>
-
-            <p className="job-description">
-              {job.description_text
-                ? job.description_text.substring(0, 350) + "..."
-                : "No description available."}
-            </p>
+            <p
+              className="job-description"
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(
+                  (job?.description_text?.slice(0, 400) ||
+                    "No description available") + "...",
+                ),
+              }}
+            />
 
             <div className="job-card-footer">
               <div className="skill-match-container">

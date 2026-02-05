@@ -18,10 +18,23 @@ import {
 import AlertMessage from "../components/AlertMessage/AlertMessage";
 import { gif } from "../assets";
 import useFetch from "../hooks/useFetch";
-import { fixUserSkills } from "../util/fixUserSkills";
+import fixUserSkills from "../util/fixUserSkills";
 import { defaultUser } from "../data/defaultUser";
 
-const SignupForm = ({ setSignupSuccessPopup, switchToLogin }) => {
+function renderRuleItem(condition, text) {
+  const isValid = condition;
+  return (
+    <li
+      key={text}
+      className={`password-rule-item ${isValid ? "valid" : "invalid"}`}
+    >
+      {isValid ? <CheckCircle size={16} /> : <XCircle size={16} />}
+      {text}
+    </li>
+  );
+}
+
+export default function SignupForm({ setSignupSuccessPopup, switchToLogin }) {
   const [signupData, setSignupData] = useState({
     first_name: "",
     last_name: "",
@@ -64,13 +77,13 @@ const SignupForm = ({ setSignupSuccessPopup, switchToLogin }) => {
     }
   }, [error]);
 
-  const handleChange = (e) => {
+  function handleChange(e) {
     const { name, value } = e.target;
     setSignupData({ ...signupData, [name]: value });
     handleClearAlert();
-  };
+  }
 
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
 
     // Validate email
@@ -113,22 +126,9 @@ const SignupForm = ({ setSignupSuccessPopup, switchToLogin }) => {
       }),
       credentials: "include",
     });
-  };
+  }
 
   const pw = signupData.password;
-
-  const renderRuleItem = (condition, text) => {
-    const isValid = condition;
-    return (
-      <li
-        key={text}
-        className={`password-rule-item ${isValid ? "valid" : "invalid"}`}
-      >
-        {isValid ? <CheckCircle size={16} /> : <XCircle size={16} />}
-        {text}
-      </li>
-    );
-  };
 
   return (
     <div className="form-card" id="signup-form">
@@ -298,6 +298,4 @@ const SignupForm = ({ setSignupSuccessPopup, switchToLogin }) => {
       </p>
     </div>
   );
-};
-
-export default SignupForm;
+}

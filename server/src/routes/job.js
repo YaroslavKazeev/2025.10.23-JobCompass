@@ -1,5 +1,5 @@
 import express from "express";
-import { searchJobs } from "../controllers/jobData.js";
+import searchJobs from "../controllers/jobData.js";
 import { verifyToken } from "../middleware/authVerify.js";
 
 const router = express.Router();

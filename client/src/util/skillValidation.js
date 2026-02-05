@@ -1,4 +1,4 @@
-export function validateSkillInput({ text, skills = [] }) {
+export default function validateSkillInput({ text, skills = [] }) {
   if (text === "") {
     return {
       type: "error",

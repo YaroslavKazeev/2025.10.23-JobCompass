@@ -1,12 +1,12 @@
-function normalizeDescription(str) {
-  const s = typeof str === "string" ? str : "";
-  return " " + s.replace(/[^A-Za-z0-9+#]/g, " ").replace(/ +/g, " ") + " ";
-}
+import normalizeDescription from "./normalizeDescription.js";
+import validateJob from "./validateJob.js";
+import normalizeUrl from "./normalizeUrl.js";
+import checkExperienceLevel from "./checkExperienceLevel.js";
 
-export default function processJobPost(job) {
+export default function processRapidAPIjob(job) {
   const {
-    id,
-    url,
+    external_apply_url: url1,
+    url: url2,
     title,
     date_posted,
     employment_type = [],
@@ -15,7 +15,7 @@ export default function processJobPost(job) {
     seniority,
     description_text = "",
     organization,
-    organization_url,
+    linkedin_org_url,
     organization_logo,
   } = job || {};
   // normalize seniority values coming from the job source
@@ -25,7 +25,6 @@ export default function processJobPost(job) {
       normalizedSeniority = "Internship";
       break;
     case "Instapniveau":
-    case "Berufseinstieg":
       normalizedSeniority = "Entry level";
       break;
     case "Medewerker":
@@ -41,19 +40,32 @@ export default function processJobPost(job) {
       normalizedSeniority = "Executive";
       break;
     case "Niet van toepassing":
-      normalizedSeniority = "Not applicable";
+      normalizedSeniority = checkExperienceLevel(title);
       break;
     default:
       normalizedSeniority = seniority;
   }
-  return {
-    id,
+
+  const url = normalizeUrl(url1) || normalizeUrl(url2);
+
+  function normalizeEmploymentType(type) {
+    if (type === "Intern") {
+      return "Internship";
+    }
+    return type;
+  }
+
+  const processedJob = {
+    id: url,
     url,
     title,
     date_posted,
     employment_type:
       Array.isArray(employment_type) && employment_type.length > 0
-        ? employment_type[0].replace("_", " ")
+        ? normalizeEmploymentType(
+            (employment_type[0].charAt(0).toUpperCase() + employment_type,
+            [0].slice(1).toLowerCase()).replace("_", "-"),
+          )
         : null,
     work_mode: remote_derived === true ? "Remote" : "On-site",
     display_location:
@@ -67,7 +79,9 @@ export default function processJobPost(job) {
     travel_time: null,
     least_transfers: null,
     organization,
-    organization_url,
+    organization_url: normalizeUrl(linkedin_org_url),
     organization_logo,
   };
+
+  return validateJob(processedJob) ? processedJob : null;
 }

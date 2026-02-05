@@ -1,0 +1,44 @@
+{
+  "data": {
+    "id": "Kt0Xw2q0PJeq09ck8",
+    "actId": "hKByXkMQaC5Qt9UMN",
+    "userId": "v7lAp5hkMCZibWzt8",
+    "startedAt": "2026-01-20T17:39:12.663Z",
+    "finishedAt": null,
+    "status": "READY",
+    "meta": { "origin": "API", "userAgent": "node" },
+    "stats": {
+      "inputBodyLen": 207,
+      "migrationCount": 0,
+      "rebootCount": 0,
+      "restartCount": 0,
+      "resurrectCount": 0,
+      "computeUnits": 0
+    },
+    "options": {
+      "build": "latest",
+      "timeoutSecs": 3600,
+      "memoryMbytes": 1024,
+      "maxItems": 9959,
+      "diskMbytes": 2048
+    },
+    "buildId": "L1CrbvczOzoTg6fUo",
+    "defaultKeyValueStoreId": "M8GvA260HBqLA619S",
+    "defaultDatasetId": "uYv5VkQzrCyHEJq3d",
+    "defaultRequestQueueId": "VHY7YpvVjZT2tZqBD",
+    "pricingInfo": {
+      "pricingModel": "PRICE_PER_DATASET_ITEM",
+      "reasonForChange": null,
+      "pricePerUnitUsd": 0.001,
+      "unitName": "result",
+      "createdAt": "2024-08-27T13:37:42.429Z",
+      "startedAt": "2024-08-27T13:37:42.429Z",
+      "apifyMarginPercentage": 0.2,
+      "notifiedAboutChangeAt": "2024-08-27T13:39:17.506Z"
+    },
+    "platformUsageBillingModel": "DEVELOPER",
+    "generalAccess": "FOLLOW_USER_SETTING",
+    "buildNumber": "1.0.116",
+    "containerUrl": "https://agdfh638hezo.runs.apify.net"
+  }
+}

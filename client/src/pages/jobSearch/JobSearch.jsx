@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import SearchInput from "../../components/SearchInput/SearchInput";
 import "./JobSearch.css";
-import { icons } from "../../assets/index.js";
 import { defaultUser } from "../../data/defaultUser.js";
 import { formatAddress } from "../../data/defaultUser.js";
 import { UseUser } from "../../context/UserContext";
+import AlertMessage from "../../components/AlertMessage/AlertMessage";
 
 export default function JobSearch() {
   const displayedSkills = defaultUser.skills
@@ -28,16 +28,16 @@ export default function JobSearch() {
       <SearchInput />
       {(!user || !user.id) && (
         <div className="guest-notice">
-          <img src={icons.info} alt="info" className="info-icon" />
-          <span>
-            Guest mode is limited to default settings — general skills such as{" "}
-            {displayedSkills.toLowerCase()}, and others, along with the guest’s
-            home address {formatAddress(defaultUser)}.
-          </span>{" "}
-          <Link to="/login" className="login-link">
-            Log in
-          </Link>
-          <span> to get more relevant results!</span>
+          <AlertMessage
+            type="info"
+            message={`Guest mode is limited to default settings — general skills such as ${displayedSkills.toLowerCase()}, and others, along with the guest’s home address ${formatAddress(defaultUser)}, and may provide as few as five job posts.`}
+          />
+          <p style={{ textAlign: "center" }}>
+            <Link to="/login" className="login-link">
+              Log in
+            </Link>
+            <span> to get more relevant results!</span>
+          </p>
         </div>
       )}
     </div>

@@ -13,7 +13,7 @@ import {
 } from "../util/AuthValidation";
 import { gif } from "../assets/index.js";
 
-const ChangePassword = forwardRef(function ChangePassword(
+export default forwardRef(function ChangePassword(
   { onKeyDown, onInputChange, onSuccess, onError },
   ref,
 ) {
@@ -184,5 +184,3 @@ const ChangePassword = forwardRef(function ChangePassword(
     </div>
   );
 });
-
-export default ChangePassword;

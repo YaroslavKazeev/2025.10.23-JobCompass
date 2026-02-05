@@ -5,7 +5,7 @@
  * object - The object to check
  * allowedFields - An array of strings denoting the properties that are allowed
  */
-const validateAllowedFields = (object, allowedFields) => {
+function validateAllowedFields(object, allowedFields) {
   const invalidFields = [];
 
   Object.keys(object).forEach((key) => {
@@ -21,6 +21,6 @@ const validateAllowedFields = (object, allowedFields) => {
   } else {
     return "";
   }
-};
+}
 
 export default validateAllowedFields;

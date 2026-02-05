@@ -25,20 +25,19 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
   }
   if (safeTotal === 0) return null;
 
-  const submitPage = () => {
+  function submitPage() {
     const page = parseInt(inputValue, 10);
+    const isValidPage = !isNaN(page);
 
-    if (isNaN(page)) {
+    if (isValidPage) {
+      // Clamp the value between 1 and safeTotal
+      const validatedPage = Math.min(Math.max(page, 1), safeTotal);
+      onPageChange(validatedPage);
+    } else {
       setInputValue(currentPage);
-      setIsEditing(false);
-      return;
     }
-
-    // Clamp the value between 1 and safeTotal
-    const validatedPage = Math.min(Math.max(page, 1), safeTotal);
-    onPageChange(validatedPage);
     setIsEditing(false);
-  };
+  }
 
   return (
     <div
@@ -47,7 +46,10 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
       aria-label="Pagination Navigation"
     >
       <button
-        onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
+        onClick={() => {
+          onPageChange(Math.max(currentPage - 1, 1));
+          window.scrollTo(0, 0);
+        }}
         disabled={currentPage === 1}
         className="pagination-btn"
         aria-label="Go to previous page"
@@ -91,7 +93,10 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
       </div>
 
       <button
-        onClick={() => onPageChange(Math.min(currentPage + 1, safeTotal))}
+        onClick={() => {
+          onPageChange(Math.min(currentPage + 1, safeTotal));
+          window.scrollTo(0, 0);
+        }}
         disabled={currentPage === safeTotal}
         className="pagination-btn"
         aria-label="Go to next page"

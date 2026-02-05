@@ -1,4 +1,4 @@
-export function validateJobInput({ text }) {
+export default function validateJobInput({ text }) {
   if (text === "") {
     return {
       type: "error",
@@ -6,12 +6,12 @@ export function validateJobInput({ text }) {
     };
   }
 
-  const hasInvalidChars = /[^a-zA-Z0-9\s\-.'/]/;
+  const hasInvalidChars = /[^a-zA-Z0-9\s\-/]/;
   if (hasInvalidChars.test(text)) {
     return {
       type: "error",
       message:
-        "Invalid characters detected. Allowed characters are letters, numbers, spaces, and these symbols: -.'/",
+        "Invalid characters detected. Allowed characters are letters, numbers, spaces, and these symbols: -/",
     };
   }
 

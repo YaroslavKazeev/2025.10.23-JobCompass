@@ -7,10 +7,25 @@ import validationErrorMessage from "../util/validationErrorMessage.js";
 import { logError } from "../util/logging.js";
 import { blacklistedTokens } from "../middleware/authVerify.js";
 import validateCreactUser from "../util/validateCreactUser.js";
-import { updateUserProfile } from "./profile.js";
-import { uploadImage } from "../services/ImageUpload.js";
+import updateUserProfile from "./profile.js";
+import uploadImage from "../services/ImageUpload.js";
+
+/*
+Personalization Features Implementation:
+- User Profiles: Skills, location, and preference management
+- Favorites System: Save jobs with personalized commute calculations
+- Commute Integration: Google Maps API for travel time calculations
+- Avatar Upload: Firebase integration for profile images
+- Profile Management: Comprehensive user data handling with validation
+- Security: Password hashing, JWT tokens, and secure session management
+- Data Privacy: Proper handling of user data with authentication checks
+*/
 
 // JWT Configuration
+
+if (!process.env.JWT_EXPIRES_IN) {
+  throw new Error("JWT_EXPIRES_IN environment variable is not set");
+}
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
@@ -29,7 +44,7 @@ const USER_FULL_INFO_QUERY = `
 
 // SIGNUP - Create a new user
 
-export const createUser = async (req, res) => {
+export async function createUser(req, res) {
   const { connectedClient, endConnection, error } = await connectNeonDB();
   if (error) {
     return res.status(503).json({
@@ -116,11 +131,11 @@ export const createUser = async (req, res) => {
   } finally {
     if (endConnection) await endConnection();
   }
-};
+}
 
 // LOGIN - Authenticate user
 
-export const loginUser = async (req, res) => {
+export async function loginUser(req, res) {
   const { connectedClient, endConnection, error } = await connectNeonDB();
 
   if (error) {
@@ -232,11 +247,11 @@ export const loginUser = async (req, res) => {
     // 💡 Crucial: Ensure the connection is closed regardless of success or failure.
     if (endConnection) await endConnection();
   }
-};
+}
 
 // LOGOUT - Blacklist JWT token (In-Memory)
 
-export const logoutUser = async (req, res) => {
+export async function logoutUser(req, res) {
   try {
     // Extract token from "Bearer <token>" header
     const token = req.cookies?.token;
@@ -250,12 +265,9 @@ export const logoutUser = async (req, res) => {
   } catch (err) {
     res.status(500).json({ success: false, msg: "Logout error" });
   }
-};
+}
 
-export const getMe = async (req, res) => {
-  const token = req.cookies?.token;
-  if (!token) return res.json({ success: false, msg: "No token provided" });
-
+export async function getMe(req, res) {
   const { connectedClient, endConnection, error } = await connectNeonDB();
   if (error) {
     return res.status(503).json({
@@ -265,13 +277,23 @@ export const getMe = async (req, res) => {
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    // User is already verified by verifyToken middleware
+    const decoded = req.user;
+
+    // Safety check: if req.user is not set, return 401
+    if (!decoded || !decoded.id) {
+      return res.status(401).json({
+        success: false,
+        msg: "Unauthorized - Invalid or missing authentication",
+      });
+    }
+
     const result = await connectedClient.query(
       `${USER_FULL_INFO_QUERY} WHERE u.id = $1`,
       [decoded.id],
     );
     if (result.rows.length === 0) {
-      return res.json({ success: false, msg: "User not found" });
+      return res.status(401).json({ success: false, msg: "User not found" });
     }
     const rows = result.rows;
     const userDataRow = rows[0];
@@ -316,19 +338,16 @@ export const getMe = async (req, res) => {
 
     res.json({ success: true, user: user });
   } catch (err) {
-    // JWT verification errors (expired, invalid token, etc.)
-    if (err.name === "JsonWebTokenError" || err.name === "TokenExpiredError") {
-      return res.json({ success: false, msg: "Invalid or expired token" });
-    }
-    // Other errors
     logError(`Error in getMe: ${err}`);
-    return res.json({ success: false, msg: "Failed to fetch user data" });
+    return res
+      .status(500)
+      .json({ success: false, msg: "Failed to fetch user data" });
   } finally {
     if (endConnection) await endConnection();
   }
-};
+}
 
-export const updateProfile = async (req, res) => {
+export async function updateProfile(req, res) {
   const user_id = req.user.id;
   const fields = req.body;
 
@@ -341,9 +360,9 @@ export const updateProfile = async (req, res) => {
       msg: err instanceof Error ? err.message : "Update error",
     });
   }
-};
+}
 
-export const updateUserAvatar = async (req, res) => {
+export async function updateUserAvatar(req, res) {
   const { connectedClient, endConnection } = await connectNeonDB();
   try {
     const file = req.file;
@@ -370,4 +389,4 @@ export const updateUserAvatar = async (req, res) => {
   } finally {
     if (endConnection) await endConnection();
   }
-};
+}

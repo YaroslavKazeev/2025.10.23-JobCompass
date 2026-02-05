@@ -138,7 +138,7 @@ footer {
   margin: 0 auto;
   padding: 0 20px;
   width: 100%;
-  max-width: clamp(700px, 70%, 1200px);
+  max-width: clamp(700px, 85%, 1200px);
 }
 
 @media (min-width: 1600px) {

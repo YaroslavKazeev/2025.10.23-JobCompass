@@ -4,13 +4,13 @@ import { UseUser } from "../context/UserContext";
 import AlertMessage from "../components/AlertMessage/AlertMessage";
 import { gif } from "../assets";
 import useFetch from "../hooks/useFetch";
-import { fixUserSkills } from "../util/fixUserSkills";
+import fixUserSkills from "../util/fixUserSkills";
 
-const LoginForm = ({
+export default function LoginForm({
   setLoginSuccessPopup,
   switchToSignup,
   switchToForgotPassword,
-}) => {
+}) {
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [alert, setAlert] = useState({ type: "", message: "" });
@@ -65,13 +65,13 @@ const LoginForm = ({
     }
   }, [error]);
 
-  const handleChange = (e) => {
+  function handleChange(e) {
     const { name, value } = e.target;
     setLoginData({ ...loginData, [name]: value });
     handleClearAlert();
-  };
+  }
 
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
     performFetch({
       method: "POST",
@@ -81,7 +81,7 @@ const LoginForm = ({
       }),
       credentials: "include",
     });
-  };
+  }
 
   return (
     <div className="form-card" id="login-form">
@@ -189,6 +189,4 @@ const LoginForm = ({
       </p>
     </div>
   );
-};
-
-export default LoginForm;
+}

@@ -6,16 +6,21 @@ import {
   useEffect,
 } from "react";
 import { defaultUser } from "../data/defaultUser";
-import { fixUserSkills } from "../util/fixUserSkills";
+import fixUserSkills from "../util/fixUserSkills";
 import useFetch from "../hooks/useFetch";
-import { userReducer } from "../reducers/userReducer";
+import userReducer from "../reducers/userReducer";
 
 const UserContext = createContext();
+function UseUser() {
+  return useContext(UserContext);
+}
 
 function UserContextProvider({ children }) {
   const [user, dispatch] = useReducer(userReducer, defaultUser);
   const [message, setMessage] = useState(null);
-  const clearMessage = () => setMessage(null);
+  function clearMessage() {
+    setMessage(null);
+  }
 
   // -------------------- GET CURRENT USER --------------------
   function handleFetchMeResults(data) {
@@ -87,10 +92,6 @@ function UserContextProvider({ children }) {
       {children}
     </UserContext.Provider>
   );
-}
-
-function UseUser() {
-  return useContext(UserContext);
 }
 
 export { UserContextProvider, UseUser };

@@ -1,7 +1,7 @@
 import rateLimit from "express-rate-limit";
 
 // Function to create a rate limiter with custom options
-export function createAuthLimiter(options = {}) {
+export default function createAuthLimiter(options = {}) {
   return rateLimit({
     windowMs: options.windowMs || 5 * 60 * 1000, // default 5 minutes
     max: options.max || 5, // default 5 requests per window

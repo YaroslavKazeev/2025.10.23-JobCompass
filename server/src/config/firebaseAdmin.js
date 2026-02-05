@@ -8,6 +8,10 @@ if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
   );
 }
 
+if (!process.env.STORAGE_BUCKET) {
+  throw new Error("STORAGE_BUCKET environment variable is not set");
+}
+
 let serviceAccount;
 try {
   serviceAccount = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS);
@@ -22,4 +26,6 @@ admin.initializeApp({
   storageBucket: process.env.STORAGE_BUCKET,
 });
 
-export const bucket = admin.storage().bucket();
+const bucket = admin.storage().bucket();
+
+export default bucket;

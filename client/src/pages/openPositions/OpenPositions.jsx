@@ -1,19 +1,30 @@
-import { useMemo, useState } from "react";
-import { gif } from "../../assets/index.js";
+// React hooks
+import { useMemo, useState, useEffect } from "react";
+// Lucide React icons
+import { GraduationCap, Briefcase, Monitor, MapPin } from "lucide-react";
+// Components
+import AlertMessage from "../../components/AlertMessage/AlertMessage";
 import DropdownFilter from "../../components/DropdownFilter/DropdownFilter";
-import JobCard from "../../components/JobCard/JobCard";
 import DropdownSort from "../../components/DropdownSort/DropdownSort";
+import JobCard from "../../components/JobCard/JobCard";
 import Pagination from "../../components/Pagination/Pagination";
+import SkillsSettings from "../../components/SkillsSettings/SkillsSettings";
+// Context
+import { UseJobs } from "../../context/JobsContext";
 import { UseUser } from "../../context/UserContext";
-import "./OpenPositions.css";
+// Utils
+import createSortComparator from "../../util/createSortComparator";
+import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
 import { findFilterOptions, filterJobs } from "../../util/filterJobs";
 import getSkillsInDescription from "../../util/getSkillsInDescription";
-import SkillsSettings from "../../components/SkillsSettings/SkillsSettings";
-import { UseJobs } from "../../context/JobsContext";
-import createSortComparator from "../../util/createSortComparator";
+// Assets
+import { gif } from "../../assets/index.js";
+// Styles
+import "./OpenPositions.css";
 
 export default function OpenPositions() {
   const { user } = UseUser();
+  const [alert, setAlert] = useState({ type: "", message: "" });
 
   const {
     allJobs,
@@ -21,6 +32,8 @@ export default function OpenPositions() {
     isJobsLoading,
     jobFetchError,
     travelFetchError,
+    serverMessage,
+    setServerMessage,
   } = UseJobs();
 
   const favorites = Array.isArray(user?.favorites) ? user.favorites : [];
@@ -32,14 +45,39 @@ export default function OpenPositions() {
     seniorityLevel: new Set(),
     employmentType: new Set(),
     work_mode: new Set(),
+    locationPrecision: new Set(),
   });
 
   const [selectedSort, setSelectedSort] = useState([
-    "Most skill matches",
     "Fewest transport transfers",
     "Nearest first",
+    "Most skill matches",
     "Newest first",
   ]);
+
+  function handleClearAlert() {
+    setAlert({ type: "", message: "" });
+  }
+
+  function delayedClearAlert() {
+    setTimeout(() => {
+      handleClearAlert();
+    }, DELAYED_CLEAR_INTERVAL);
+  }
+
+  useEffect(() => {
+    if (jobFetchError) {
+      setAlert({ type: "error", message: String(jobFetchError) });
+      delayedClearAlert();
+    } else if (travelFetchError) {
+      setAlert({ type: "error", message: String(travelFetchError) });
+      delayedClearAlert();
+    } else if (serverMessage) {
+      setAlert({ type: "info", message: serverMessage });
+      setServerMessage("");
+      delayedClearAlert();
+    }
+  }, [jobFetchError, travelFetchError, serverMessage, setServerMessage]);
 
   const jobsWithSkills = useMemo(() => {
     return allJobs.map((job) => {
@@ -59,27 +97,31 @@ export default function OpenPositions() {
     return findFilterOptions(allJobs);
   }, [allJobs]);
 
-  const handleFilterChange = (filterKey, value, isChecked) => {
+  function handleFilterChange(filterKey, value, isChecked) {
     setActiveFilters((prev) => {
       const newSet = new Set(prev[filterKey]);
       isChecked ? newSet.add(value) : newSet.delete(value);
       setCurrentPage(1);
       return { ...prev, [filterKey]: newSet };
     });
-  };
+  }
 
-  const handleClearFilters = () => {
+  function handleClearFilters() {
     setActiveFilters({
       seniorityLevel: new Set(),
       employmentType: new Set(),
       work_mode: new Set(),
+      locationPrecision: new Set(),
     });
     setCurrentPage(1);
-  };
+  }
 
   const sortedJobs = useMemo(() => {
-    if (selectedSort.length === 0) return jobsWithSkills;
-    return [...jobsWithSkills].sort(createSortComparator(selectedSort));
+    const result =
+      selectedSort.length === 0
+        ? jobsWithSkills
+        : [...jobsWithSkills].sort(createSortComparator(selectedSort));
+    return result;
   }, [jobsWithSkills, selectedSort]);
 
   const filteredJobs = useMemo(() => {
@@ -111,10 +153,11 @@ export default function OpenPositions() {
             <div className="filter-dropdowns">
               <DropdownFilter
                 filterKey="seniorityLevel"
-                label="Experience level"
+                label="Experience"
                 options={filterOptions.experienceOptions}
                 activeValues={activeFilters.seniorityLevel}
                 onFilterChange={handleFilterChange}
+                icon={<GraduationCap />}
               />
               <DropdownFilter
                 filterKey="employmentType"
@@ -122,6 +165,7 @@ export default function OpenPositions() {
                 options={filterOptions.jobTypeOptions}
                 activeValues={activeFilters.employmentType}
                 onFilterChange={handleFilterChange}
+                icon={<Briefcase />}
               />
               <DropdownFilter
                 filterKey="work_mode"
@@ -129,6 +173,15 @@ export default function OpenPositions() {
                 options={filterOptions.workModeOptions}
                 activeValues={activeFilters.work_mode}
                 onFilterChange={handleFilterChange}
+                icon={<Monitor />}
+              />
+              <DropdownFilter
+                filterKey="locationPrecision"
+                label="Location"
+                options={filterOptions.locationPrecisionOptions}
+                activeValues={activeFilters.locationPrecision}
+                onFilterChange={handleFilterChange}
+                icon={<MapPin />}
               />
               <button
                 onClick={handleClearFilters}
@@ -140,18 +193,19 @@ export default function OpenPositions() {
           </div>
         </div>
 
-        {(jobFetchError || travelFetchError) && (
-          <div className="error-message">
-            Error loading jobs or commute info:{" "}
-            {jobFetchError || travelFetchError}
+        {alert.message && (
+          <div className="md:w-auto">
+            <AlertMessage type={alert.type} message={alert.message} />
           </div>
         )}
 
         {!isJobsLoading && filteredJobs.length === 0 && (
-          <p className="job-message">
-            No jobs are shown. Go to <strong>Job search</strong> or{" "}
-            <strong>Clear filters</strong> to see more results.
-          </p>
+          <div className="md:w-auto">
+            <AlertMessage
+              type="info"
+              message="No jobs are shown. Go to Job search or Clear filters to see more results."
+            />
+          </div>
         )}
 
         {!isJobsLoading && filteredJobs.length > 0 && (

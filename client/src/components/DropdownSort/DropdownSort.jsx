@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { Handshake, Bus, Clock } from "lucide-react";
 import useOutsideClick from "../../hooks/useOutsideClick";
 import "./DropdownSort.css";
 
@@ -61,7 +62,18 @@ export default function DropdownSort({ selectedSort, setSelectedSort }) {
         aria-expanded={isOpen}
         type="button"
       >
-        <span>Custom sort</span>
+        <div className="dropdown-button-content">
+          <span className="job-icon">
+            <Handshake size={16} />
+          </span>
+          <span className="job-icon">
+            <Bus size={16} />
+          </span>
+          <span className="job-icon">
+            <Clock size={16} />
+          </span>
+          <span>Custom sort</span>
+        </div>
         <svg
           className="w-4 h-4"
           fill="none"

@@ -1,4 +1,4 @@
-export function cleanUpText(text) {
+export default function cleanUpText(text) {
   return (text || "")
     .replace(/\s+/g, " ")
     .replace(/-+/g, "-")

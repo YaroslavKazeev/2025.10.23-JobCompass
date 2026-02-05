@@ -8,14 +8,25 @@ import {
   updateUserAvatar,
 } from "../controllers/user.js";
 import { verifyToken } from "../middleware/authVerify.js";
-import { createAuthLimiter } from "../middleware/rateLimiter.js";
-import { toggleFavoriteJob } from "../controllers/toggleFavoriteJob.js";
-import { deleteUser } from "../controllers/deleteUser.js";
-import { changePassword } from "../controllers/changePassword.js";
-import { changeSkills } from "../controllers/changeSkills.js";
-import { forgotPassword } from "../controllers/forgotPassword.js";
-import { resetPassword } from "../controllers/resetPassword.js";
+import createAuthLimiter from "../middleware/rateLimiter.js";
+import toggleFavoriteJob from "../controllers/toggleFavoriteJob.js";
+import deleteUser from "../controllers/deleteUser.js";
+import changePassword from "../controllers/changePassword.js";
+import changeSkills from "../controllers/changeSkills.js";
+import forgotPassword from "../controllers/forgotPassword.js";
+import resetPassword from "../controllers/resetPassword.js";
 import multer from "multer";
+
+/*
+Authentication & Security Implementation:
+- JWT-Based Authentication: Token-based user authentication with HTTP-only cookies
+- Password Security: bcrypt hashing for secure password storage (see user controller)
+- Password Reset: Secure token-based password recovery with expiration
+- Session Management: Secure token handling with proper expiration
+- Rate Limiting: API protection and fair usage enforcement (see authLimiter below)
+- File Upload Security: Multer configuration for avatar uploads with type and size validation
+- Token Verification: Middleware-based token verification for protected routes
+*/
 
 const userRouter = express.Router();
 const storage = multer.memoryStorage();
@@ -48,7 +59,6 @@ userRouter.post("/change-password", verifyToken, changePassword);
 userRouter.post("/change-skills", verifyToken, changeSkills);
 userRouter.post("/forgot-password", forgotPassword);
 userRouter.post("/reset-password", resetPassword);
-
 userRouter.post(
   "/update-avatar",
   verifyToken,

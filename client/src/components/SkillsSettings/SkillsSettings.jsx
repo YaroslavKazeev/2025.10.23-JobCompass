@@ -7,10 +7,11 @@ import AlertMessage from "../AlertMessage/AlertMessage";
 import PopupForSave from "../SuccessPopup/PopupForSave";
 // Hook & Utility imports
 import useFetch from "../../hooks/useFetch";
-import { cleanUpText } from "../../util/cleanUpText";
-import { regexEndNormalizeSkill } from "../../util/regexEndNormalizeSkill";
-import { validateSkillInput } from "../../util/skillValidation";
+import cleanUpText from "../../util/cleanUpText";
+import regexEndNormalizeSkill from "../../util/regexEndNormalizeSkill";
+import validateSkillInput from "../../util/skillValidation";
 import { gif } from "../../assets/index.js";
+import { DELAYED_CLEAR_INTERVAL } from "../../util/constants";
 // Styles
 import "./SkillsSettings.css";
 
@@ -32,7 +33,7 @@ export default function SkillsSettings() {
   function delayedClearAlert() {
     setTimeout(() => {
       handleClearAlert();
-    }, 2000);
+    }, DELAYED_CLEAR_INTERVAL);
   }
 
   const {
@@ -84,7 +85,7 @@ export default function SkillsSettings() {
     const newSkill = cleanUpText(skillInput.value || "");
     const validationError = validateSkillInput({ text: newSkill, skills });
     if (validationError) {
-      setAlert({ type: "error", message: String(validationError) });
+      setAlert(validationError);
       delayedClearAlert();
       return;
     }

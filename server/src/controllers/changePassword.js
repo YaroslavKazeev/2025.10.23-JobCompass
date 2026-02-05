@@ -3,7 +3,7 @@ import connectNeonDB from "../db/connectNeonDB.js";
 import bcrypt from "bcrypt";
 import { logError } from "../util/logging.js";
 
-export async function changePassword(req, res) {
+export default async function changePassword(req, res) {
   const { currentPassword, newPassword } = req.body;
   const user_id = req.user?.id;
 

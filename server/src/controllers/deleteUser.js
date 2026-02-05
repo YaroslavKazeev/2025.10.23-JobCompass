@@ -1,7 +1,7 @@
 import connectNeonDB from "../db/connectNeonDB.js";
 import { logError } from "../util/logging.js";
 
-export const deleteUser = async (req, res) => {
+export default async function deleteUser(req, res) {
   // This API endpoint is secured via `verifyToken` middleware,
   // ensuring the request is authenticated.
 
@@ -56,4 +56,4 @@ export const deleteUser = async (req, res) => {
   } finally {
     await endConnection();
   }
-};
+}

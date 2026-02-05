@@ -40,7 +40,7 @@ export default function ResetPasswordForm() {
     }
   }, [error, setAlert, setResetSuccess]);
 
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
     if (!token) {
       setAlert({ type: "error", message: "Invalid or missing token." });
@@ -67,7 +67,7 @@ export default function ResetPasswordForm() {
         newPassword,
       }),
     });
-  };
+  }
 
   return (
     <>

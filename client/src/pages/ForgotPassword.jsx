@@ -5,7 +5,7 @@ import { Mail } from "lucide-react";
 import { gif } from "../assets";
 import AlertMessage from "../components/AlertMessage/AlertMessage";
 
-const ForgotPasswordForm = ({ switchToLogin }) => {
+export default function ForgotPasswordForm({ switchToLogin }) {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const { setMessage } = UseUser();
@@ -29,13 +29,13 @@ const ForgotPasswordForm = ({ switchToLogin }) => {
     }
   }, [error]);
 
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault(); // Prevent page reload when the form is submitted
     performFetch({
       method: "POST",
       body: JSON.stringify({ email }),
     });
-  };
+  }
 
   return (
     <div className="form-card">
@@ -100,6 +100,4 @@ const ForgotPasswordForm = ({ switchToLogin }) => {
       )}
     </div>
   );
-};
-
-export default ForgotPasswordForm;
+}
