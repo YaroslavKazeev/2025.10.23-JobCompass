@@ -3,10 +3,36 @@ import "./About.css";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { images } from "../../assets";
-import { Filter, Map, Lock, User, Heart, Zap } from "lucide-react";
+import {
+  Filter,
+  Map,
+  Lock,
+  User,
+  Heart,
+  Zap,
+  Compass,
+  Target,
+} from "lucide-react";
 
 export default function About() {
   const location = useLocation();
+
+  useEffect(() => {
+    const nodes = document.querySelectorAll("[data-about-reveal]");
+    if (!nodes.length) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("about-reveal--visible");
+          observer.unobserve(entry.target);
+        });
+      },
+      { rootMargin: "0px 0px -40px 0px", threshold: 0.12 },
+    );
+    nodes.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (location.hash !== "#contact") return;
@@ -15,6 +41,7 @@ export default function About() {
       block: "start",
     });
   }, [location.pathname, location.hash]);
+
   const contributors = [
     {
       name: "Yaroslav Kazeev",
@@ -115,16 +142,56 @@ export default function About() {
     },
   ];
 
+  function handleContactSubmit(e) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    const name = (data.get("name") ?? "").toString().trim();
+    const email = (data.get("email") ?? "").toString().trim();
+    const message = (data.get("message") ?? "").toString().trim();
+
+    let body = "";
+    if (name) body += `${name}\n`;
+    if (email) body += `${email}\n`;
+    if (name || email) body += "\n";
+    body += message;
+
+    const subject = "Question about JobCompass";
+    window.location.href = `mailto:jobcompass2025@gmail.com?subject=${encodeURIComponent(
+      subject,
+    )}&body=${encodeURIComponent(body)}`;
+  }
+
   return (
     <div className="about-page content-container">
       <main className="about-main">
-        <h1 className="about-title">About the project</h1>
+        <section
+          className="about-hero about-reveal"
+          data-about-reveal
+          aria-labelledby="about-page-title"
+        >
+          <div className="about-hero__backdrop" aria-hidden />
+          <div className="about-hero__inner">
+            <h1 id="about-page-title" className="about-title">
+              About the project
+            </h1>
+          </div>
+        </section>
 
         {/* Project Overview */}
         <div className="project-overview">
-          <div className="overview-item">
+          <div
+            className="overview-highlight-card overview-item about-reveal"
+            data-about-reveal
+          >
+            <span className="overview-accent" aria-hidden />
             <div className="overview-text">
-              <h3>What We Do</h3>
+              <div className="overview-heading-row">
+                <span className="overview-icon-wrap" aria-hidden>
+                  <Compass className="overview-section-icon" />
+                </span>
+                <h3>What We Do</h3>
+              </div>
               <p>
                 We help you find ideal positions with advanced filtering
                 capabilities that go beyond traditional job boards. Our platform
@@ -133,9 +200,18 @@ export default function About() {
             </div>
           </div>
 
-          <div className="overview-item">
+          <div
+            className="overview-highlight-card overview-item about-reveal"
+            data-about-reveal
+          >
+            <span className="overview-accent" aria-hidden />
             <div className="overview-text">
-              <h3>Our mission</h3>
+              <div className="overview-heading-row">
+                <span className="overview-icon-wrap" aria-hidden>
+                  <Target className="overview-section-icon" />
+                </span>
+                <h3>Our mission</h3>
+              </div>
               <p>
                 Connect talented professionals with opportunities that match
                 their skills, preferences, and career goals.
@@ -145,67 +221,118 @@ export default function About() {
         </div>
 
         {/* Key Features */}
-        <h2>Key Features</h2>
-        <div className="features-grid">
-          {features.map((feature, index) => (
-            <div key={index} className="feature-card">
-              <div className="icon-wrapper">{feature.icon}</div>
-              <h3>{feature.title}</h3>
-              <p>{feature.description}</p>
-            </div>
-          ))}
+        <div className="about-section-bundle about-reveal" data-about-reveal>
+          <h2>Key Features</h2>
+          <div className="features-grid">
+            {features.map((feature, index) => (
+              <div key={index} className="feature-card">
+                <div className="icon-wrapper">{feature.icon}</div>
+                <h3>{feature.title}</h3>
+                <p>{feature.description}</p>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <h2 className="contributors-title">Contributors</h2>
+        <div className="about-section-bundle about-reveal" data-about-reveal>
+          <h2 className="contributors-title">Contributors</h2>
 
-        <div className="contributor-grid-flex">
-          {contributors.map((contributor, index) => (
-            <div key={index} className="contributor-card">
-              <div className="contributor-content">
-                <div className="contributor-heading">
-                  <img
-                    src={contributor.avatar}
-                    alt={`${contributor.name}'s avatar`}
-                    className="contributor-avatar"
-                  />
-                  <div className="name-and-role">
-                    <h3 className="contributor-name">{contributor.name}</h3>
-                    <p className="contributor-role">{contributor.role}</p>
+          <div className="contributor-grid-flex">
+            {contributors.map((contributor, index) => (
+              <div key={index} className="contributor-card">
+                <div className="contributor-content">
+                  <div className="contributor-heading">
+                    <img
+                      src={contributor.avatar}
+                      alt={`${contributor.name}'s avatar`}
+                      className="contributor-avatar"
+                    />
+                    <div className="name-and-role">
+                      <h3 className="contributor-name">{contributor.name}</h3>
+                      <p className="contributor-role">{contributor.role}</p>
+                    </div>
                   </div>
+
+                  <p className="contributor-description">
+                    {contributor.description}
+                  </p>
                 </div>
 
-                <p className="contributor-description">
-                  {contributor.description}
-                </p>
+                <div className="contributor-links">
+                  <a
+                    href={contributor.gitHub}
+                    className="link-button"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span>GitHub</span>
+                  </a>
+                  <a
+                    href={contributor.linkedin}
+                    className="link-button"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span>LinkedIn</span>
+                  </a>
+                </div>
               </div>
-
-              <div className="contributor-links">
-                <a
-                  href={contributor.gitHub}
-                  className="link-button"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <span>GitHub</span>
-                </a>
-                <a
-                  href={contributor.linkedin}
-                  className="link-button"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <span>LinkedIn</span>
-                </a>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
-        <div className="contact-section" id="contact">
+        <div
+          className="contact-section about-reveal"
+          id="contact"
+          data-about-reveal
+        >
           <h2 className="contact-title">Get in touch?</h2>
           <p className="contact-text-primary">
             Have questions or feedback? We would love to hear from you.
           </p>
+
+          <form className="contact-form" onSubmit={handleContactSubmit}>
+            <div className="contact-form-field">
+              <label className="contact-form-label" htmlFor="contact-name">
+                Name
+              </label>
+              <input
+                id="contact-name"
+                name="name"
+                type="text"
+                autoComplete="name"
+                placeholder="Yahya Al-Ademi"
+                className="contact-form-input"
+              />
+            </div>
+            <div className="contact-form-field">
+              <label className="contact-form-label" htmlFor="contact-email">
+                Email
+              </label>
+              <input
+                id="contact-email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                placeholder="yaroslavkazeev@gmail.com"
+                className="contact-form-input"
+              />
+            </div>
+            <div className="contact-form-field contact-form-field--full">
+              <label className="contact-form-label" htmlFor="contact-message">
+                Message
+              </label>
+              <textarea
+                id="contact-message"
+                name="message"
+                rows={4}
+                className="contact-form-textarea"
+              />
+            </div>
+            <button type="submit" className="contact-form-submit">
+              Submit
+            </button>
+          </form>
 
           <p className="contact-text-secondary">
             Drop us a line at{" "}
