@@ -286,6 +286,7 @@ export default function About() {
           id="contact"
           data-about-reveal
         >
+        <div className="contact-section" id="contact">
           <h2 className="contact-title">Get in touch?</h2>
           <p className="contact-text-primary">
             Have questions or feedback? We would love to hear from you.

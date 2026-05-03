@@ -1,6 +1,4 @@
 export function mapUserFavoritesFromRows(rows) {
-  if (!rows.length) return [];
-
   const favorites = [];
   rows.forEach((row) => {
     if (row.job_id) {

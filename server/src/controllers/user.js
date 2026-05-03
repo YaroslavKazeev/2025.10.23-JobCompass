@@ -34,7 +34,6 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
 export async function createUser(req, res, next) {
   const { connectedClient, endConnection, error } = await connectNeonDB();
   if (error) {
-    if (endConnection) await endConnection();
     logError(`DB Connection Error: ${error}`);
     return next(createHttpError(503, "DB Connection Error"));
   }
@@ -126,7 +125,6 @@ export async function loginUser(req, res, next) {
   const { connectedClient, endConnection, error } = await connectNeonDB();
 
   if (error) {
-    if (endConnection) await endConnection();
     logError(`DB Connection Error: ${error}`);
     return next(createHttpError(503, "DB Connection Error"));
   }
@@ -218,7 +216,6 @@ export async function logoutUser(req, res, next) {
 export async function getMe(req, res, next) {
   const { connectedClient, endConnection, error } = await connectNeonDB();
   if (error) {
-    if (endConnection) await endConnection();
     logError(`DB Connection Error: ${error}`);
     return next(createHttpError(503, "DB Connection Error"));
   }
@@ -266,7 +263,6 @@ export async function updateUserAvatar(req, res, next) {
   const { connectedClient, endConnection, error } = await connectNeonDB();
 
   if (error) {
-    if (endConnection) await endConnection();
     logError(`DB Connection Error: ${error}`);
     return next(createHttpError(503, "DB Connection Error"));
   }

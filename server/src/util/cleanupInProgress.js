@@ -6,7 +6,7 @@
 export default function cleanupInProgress(inProgressSearch, expirationTime) {
   const currentTime = Date.now();
 
-  // Clean up inProgressSearch (entries older than 3 minutes)
+  // Clean up inProgressSearch object from older entries
   for (const key in inProgressSearch) {
     if (currentTime - inProgressSearch[key].timestamp > expirationTime) {
       delete inProgressSearch[key];

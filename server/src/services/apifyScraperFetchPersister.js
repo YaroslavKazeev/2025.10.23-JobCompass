@@ -15,6 +15,9 @@ export default function apifyScraperFetchPersister(
   if (!is_auth) return null;
   if (is_whole_string) return null;
   if (inProgressScraperFetch[search_string]) return null;
+  if (!is_auth || is_whole_string || inProgressScraperFetch[search_string]) {
+    return null;
+  }
 
   inProgressScraperFetch[search_string] = {
     timestamp: Date.now(),
