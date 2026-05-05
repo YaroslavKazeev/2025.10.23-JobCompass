@@ -13,7 +13,6 @@ export default async function resetPassword(req, res, next) {
   const { connectedClient, endConnection, error } = await connectNeonDB();
 
   if (error) {
-    if (endConnection) await endConnection();
     logError(`DB Connection Error: ${error}`);
     return next(createHttpError(503, "DB Connection Error"));
   }

@@ -42,7 +42,6 @@ export default async function toggleFavoriteJob(req, res, next) {
 
   //  Handle database connection error
   if (error) {
-    if (endConnection) await endConnection();
     logError(`DB Connection Error: ${error}`);
     return next(createHttpError(503, "DB Connection Error"));
   }

@@ -25,7 +25,6 @@ export default async function deleteUser(req, res, next) {
   // Connect to the database
   const { error, connectedClient, endConnection } = await connectNeonDB();
   if (error) {
-    if (endConnection) await endConnection();
     logError(`DB Connection Error: ${error}`);
     return next(createHttpError(503, "DB Connection Error"));
   }

@@ -56,7 +56,6 @@ export default async function updateUserProfile(user_id, fieldsToUpdate) {
 
   const { connectedClient, endConnection, error } = await connectNeonDB();
   if (error) {
-    if (endConnection) await endConnection();
     logError(`DB Connection Error: ${error}`);
     throw createHttpError(503, "DB Connection Error");
   }
