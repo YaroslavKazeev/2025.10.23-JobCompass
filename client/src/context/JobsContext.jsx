@@ -16,7 +16,7 @@ function JobsProvider({ children }) {
   // Clear jobs when user logs in/out
   useEffect(() => {
     setAllJobs([]);
-  }, [user.id]);
+  }, [user?.id]);
 
   // jobs fetch
   const {
