@@ -278,7 +278,7 @@ export async function updateUserAvatar(req, res, next) {
       [imageUrl, user_id],
     );
 
-    res.send({
+    res.json({
       success: true,
       message: "Image uploaded successfully.",
       url: imageUrl,

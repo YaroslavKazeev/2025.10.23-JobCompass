@@ -65,23 +65,16 @@ export default function useFetch(route, onReceived) {
       try {
         const url = `/api${route}`;
         const res = await fetch(url, { ...baseOptions, ...options, signal });
-        const contentType = res.headers.get("content-type") || "";
-        const rawText = await res.text();
-        const hasBody = rawText.trim().length > 0;
-
         let jsonResult = null;
-        if (hasBody && contentType.includes("application/json")) {
-          try {
-            jsonResult = JSON.parse(rawText);
-          } catch {
-            console.error("Non-JSON body in response for URL:", url);
-          }
+        try {
+          jsonResult = await res.json();
+        } catch (err) {
+          console.error("Error parsing JSON response for URL:", url, err);
         }
 
         if (!res.ok) {
           setError(
             (jsonResult && jsonResult.msg) ||
-              (hasBody ? rawText : null) ||
               `Fetch for ${url} returned an invalid status (${res.status})`,
           );
           setIsLoading(false);
@@ -94,7 +87,7 @@ export default function useFetch(route, onReceived) {
           setError(
             (jsonResult && jsonResult.msg) ||
               `The result from our backend did not have an error message. Received: ${JSON.stringify(
-                jsonResult ?? rawText,
+                jsonResult,
               )}`,
           );
         }
