@@ -62,15 +62,6 @@ export default function useFetch(route, onReceived) {
           console.error("Error parsing JSON response for URL:", url, err);
         }
 
-        if (!res.ok) {
-          setError(
-            (jsonResult && jsonResult.msg) ||
-              `Fetch for ${url} returned an invalid status (${res.status})`,
-          );
-          setIsLoading(false);
-          return;
-        }
-
         if (jsonResult && jsonResult.success === true) {
           onReceived(jsonResult);
         } else {
