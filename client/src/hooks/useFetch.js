@@ -65,7 +65,7 @@ export default function useFetch(route, onReceived) {
         if (jsonResult?.success) {
           onReceived(jsonResult);
         } else {
-          setError(jsonResult.msg);
+          setError(jsonResult.msg || "The backend returned an error");
         }
 
         setIsLoading(false);
