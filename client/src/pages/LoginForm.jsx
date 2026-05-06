@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { LogIn, Mail, Eye, EyeOff } from "lucide-react";
 import { UseUser } from "../context/UserContext";
 import AlertMessage from "../components/AlertMessage/AlertMessage";
@@ -36,18 +36,15 @@ export default function LoginForm({
     }
   }
 
-  const { isLoading, error, performFetch } = useFetch(
+  const { isLoading, performFetch } = useFetch(
     "/users/login",
     handleLoginResults,
-  );
-
-  useEffect(() => {
-    if (error) {
-      setAlert({ type: "error", message: String(error) });
+    (errorMessage) => {
+      setAlert({ type: "error", message: String(errorMessage) });
       setLoginSuccessPopup(false);
       setDonationPopup(false);
-    }
-  }, [error]);
+    },
+  );
 
   function handleChange(e) {
     const { name, value } = e.target;

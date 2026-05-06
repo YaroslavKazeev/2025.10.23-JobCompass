@@ -9,16 +9,13 @@ import { useState } from "react";
  * Our hook will give you an object with the properties:
  *
  * isLoading - true if the fetch is still in progress
- * error - will contain an Error object if something went wrong
  * performFetch - this function will trigger the fetching. It is up to the user of the hook to determine when to do this!
  */
-export default function useFetch(route, onReceived) {
-  const [error, setError] = useState(null);
+export default function useFetch(route, onReceived, onError = () => {}) {
   const [isLoading, setIsLoading] = useState(false);
 
   // Add any args given to the function to the fetch function
   function performFetch(options) {
-    setError(null);
     setIsLoading(true);
 
     const isFormData = options?.body instanceof FormData;
@@ -54,12 +51,12 @@ export default function useFetch(route, onReceived) {
         if (jsonResult?.success) {
           onReceived(jsonResult);
         } else {
-          setError(jsonResult.msg || "The backend returned an error");
+          onError(jsonResult?.msg || "The backend returned an error");
         }
 
         setIsLoading(false);
       } catch (error) {
-        setError(error.message || "An error occurred during fetch");
+        onError(error?.message || "An error occurred during fetch");
         setIsLoading(false);
       }
     }
@@ -67,5 +64,5 @@ export default function useFetch(route, onReceived) {
     fetchData();
   }
 
-  return { isLoading, error, performFetch };
+  return { isLoading, performFetch };
 }

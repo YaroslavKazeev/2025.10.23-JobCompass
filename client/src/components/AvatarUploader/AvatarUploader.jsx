@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import { UseUser } from "../../context/UserContext";
 import "./AvatarUploader.css";
 import useFetch from "../../hooks/useFetch";
@@ -8,7 +8,7 @@ export default function AvatarUploader({ setAlert, delayedClearAlert }) {
   const { user, dispatch } = UseUser();
   const fileInputRef = useRef(null);
 
-  const { isLoading, error, performFetch } = useFetch(
+  const { isLoading, performFetch } = useFetch(
     "/users/update-avatar",
     (result) => {
       dispatch({
@@ -20,15 +20,12 @@ export default function AvatarUploader({ setAlert, delayedClearAlert }) {
       setAlert({ type: "success", message: "Avatar updated!" });
       delayedClearAlert();
     },
-  );
-
-  useEffect(() => {
-    if (error) {
-      console.error("Avatar upload error:", error);
+    (errorMessage) => {
+      console.error("Avatar upload error:", errorMessage);
       setAlert({ type: "error", message: "Failed to upload avatar." });
       delayedClearAlert();
-    }
-  }, [error]);
+    },
+  );
 
   async function handleFileChange(e) {
     const file = e.target.files[0];

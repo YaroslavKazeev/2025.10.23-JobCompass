@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import useFetch from "../hooks/useFetch";
 import useAlert from "../hooks/useAlert";
 import { UseUser } from "../context/UserContext";
@@ -12,20 +12,17 @@ export default function ForgotPasswordForm({ switchToLogin }) {
   const { setMessage } = UseUser();
   const { alert, setAlert, delayedClearAlert } = useAlert();
 
-  const { isLoading, error, performFetch } = useFetch(
+  const { isLoading, performFetch } = useFetch(
     "/users/forgot-password",
     (data) => {
       setSent(true);
       setMessage(data.msg);
     },
-  );
-
-  useEffect(() => {
-    if (error) {
-      setAlert({ type: "error", message: String(error) });
+    (errorMessage) => {
+      setAlert({ type: "error", message: String(errorMessage) });
       delayedClearAlert();
-    }
-  }, [error, setAlert, delayedClearAlert]);
+    },
+  );
 
   async function handleSubmit(e) {
     e.preventDefault(); // Prevent page reload when the form is submitted

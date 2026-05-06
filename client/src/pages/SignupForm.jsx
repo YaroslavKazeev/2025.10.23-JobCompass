@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import useAlert from "../hooks/useAlert";
 import {
   UserPlus,
@@ -60,17 +60,14 @@ export default function SignupForm({ setSignupSuccessPopup, switchToLogin }) {
     setSignupSuccessPopup(true);
   }
 
-  const { isLoading, error, performFetch } = useFetch(
+  const { isLoading, performFetch } = useFetch(
     "/users",
     handleSignupResults,
-  );
-
-  useEffect(() => {
-    if (error) {
-      setAlert({ type: "error", message: String(error) });
+    (errorMessage) => {
+      setAlert({ type: "error", message: String(errorMessage) });
       setSignupSuccessPopup(false);
-    }
-  }, [error]);
+    },
+  );
 
   function handleChange(e) {
     const { name, value } = e.target;

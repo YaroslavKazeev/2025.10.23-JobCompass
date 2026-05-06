@@ -45,7 +45,7 @@ export default function Profile() {
     setConfirmPassword("");
   }, [user]);
 
-  const { error, isLoading, performFetch } = useFetch(
+  const { isLoading, performFetch } = useFetch(
     "/users/profile",
     (data) => {
       dispatch({
@@ -58,12 +58,11 @@ export default function Profile() {
       setAlert({ type: "success", message: "Profile updated successfully!" });
       delayedClearAlert();
     },
+    (errorMessage) => {
+      setAlert({ type: "error", message: String(errorMessage) });
+      delayedClearAlert();
+    },
   );
-
-  useEffect(() => {
-    if (error) setAlert({ type: "error", message: String(error) });
-    delayedClearAlert();
-  }, [error]);
 
   function handleDeleteClick() {
     setShowDeletePopup(true);

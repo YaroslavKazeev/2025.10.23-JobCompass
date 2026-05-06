@@ -11,7 +11,7 @@ function JobsProvider({ children }) {
   const { user } = UseUser();
   const [allJobs, setAllJobs] = useState([]);
   const [searchString, setSearchString] = useState(""); //  global search term
-  const [serverMessage, setServerMessage] = useState("");
+  const [serverMessage, setServerMessage] = useState(null);
 
   // Clear jobs when user logs in/out
   useEffect(() => {
@@ -19,17 +19,19 @@ function JobsProvider({ children }) {
   }, [user.id]);
 
   // jobs fetch
-  const {
-    isLoading: isJobsLoading,
-    error: jobFetchError,
-    performFetch: performJobFetch,
-  } = useFetch("/jobs/search", (data) => {
-    setAllJobs(data.result);
-    if (data.msg) {
-      setServerMessage(data.msg);
-    }
-    fetchBatchTravelDetails(data.result);
-  });
+  const { isLoading: isJobsLoading, performFetch: performJobFetch } = useFetch(
+    "/jobs/search",
+    (data) => {
+      setAllJobs(data.result);
+      if (data.msg) {
+        setServerMessage({ type: "info", message: data.msg });
+      }
+      fetchBatchTravelDetails(data.result);
+    },
+    (errorMessage) => {
+      setServerMessage({ type: "error", message: String(errorMessage) });
+    },
+  );
 
   // travel details fetch
   function getCitiesToFetch(jobsArray) {
@@ -62,11 +64,10 @@ function JobsProvider({ children }) {
     }
   }
 
-  const {
-    isLoading: isTravelLoading,
-    error: travelFetchError,
-    performFetch: performTravelFetch,
-  } = useFetch("/travel/batch", handleTravelFetchResults);
+  const { isLoading: isTravelLoading, performFetch: performTravelFetch } =
+    useFetch("/travel/batch", handleTravelFetchResults, (errorMessage) => {
+      setServerMessage({ type: "error", message: String(errorMessage) });
+    });
 
   async function fetchBatchTravelDetails(jobsArray) {
     const citiesToFetch = getCitiesToFetch(jobsArray);
@@ -93,9 +94,7 @@ function JobsProvider({ children }) {
         allJobs,
         setAllJobs,
         isJobsLoading,
-        jobFetchError,
         isTravelLoading,
-        travelFetchError,
         searchString,
         setSearchString,
         performJobFetch,
