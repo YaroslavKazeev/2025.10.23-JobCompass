@@ -182,8 +182,9 @@ export default function Profile() {
       if (cityVal !== user.city) updatedFields.city = cityVal;
       if (countryVal !== user.country) updatedFields.country = countryVal;
       const savedHouseNumber = cleanUpText(String(user.house_number ?? ""));
-      if (house_number !== savedHouseNumber)
+      if (house_number !== savedHouseNumber) {
         updatedFields.house_number = house_number;
+      }
       if (pwdCurrent && pwdNew) {
         updatedFields.currentPassword = pwdCurrent;
         updatedFields.newPassword = pwdNew;
