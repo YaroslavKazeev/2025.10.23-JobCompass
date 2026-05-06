@@ -11,19 +11,8 @@ import { useState } from "react";
  * isLoading - true if the fetch is still in progress
  * error - will contain an Error object if something went wrong
  * performFetch - this function will trigger the fetching. It is up to the user of the hook to determine when to do this!
- * cancelFetch - this function will cancel the fetch, call it when your component is unmounted
  */
 export default function useFetch(route, onReceived) {
-  /**
-   * We use the AbortController which is supported by all modern browsers to handle cancellations
-   * For more info: https://developer.mozilla.org/en-US/docs/Web/API/AbortController
-   */
-  const controller = new AbortController();
-  const signal = controller.signal;
-  function cancelFetch() {
-    controller.abort();
-  }
-
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -54,7 +43,7 @@ export default function useFetch(route, onReceived) {
 
       try {
         const url = `/api${route}`;
-        const res = await fetch(url, { ...baseOptions, ...options, signal });
+        const res = await fetch(url, { ...baseOptions, ...options });
         let jsonResult = null;
         try {
           jsonResult = await res.json();
@@ -78,5 +67,5 @@ export default function useFetch(route, onReceived) {
     fetchData();
   }
 
-  return { isLoading, error, performFetch, cancelFetch };
+  return { isLoading, error, performFetch };
 }
