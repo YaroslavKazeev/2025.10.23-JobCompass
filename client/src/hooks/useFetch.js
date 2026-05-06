@@ -62,15 +62,10 @@ export default function useFetch(route, onReceived) {
           console.error("Error parsing JSON response for URL:", url, err);
         }
 
-        if (jsonResult && jsonResult.success === true) {
+        if (jsonResult?.success) {
           onReceived(jsonResult);
         } else {
-          setError(
-            (jsonResult && jsonResult.msg) ||
-              `The result from our backend did not have an error message. Received: ${JSON.stringify(
-                jsonResult,
-              )}`,
-          );
+          setError(jsonResult.msg);
         }
 
         setIsLoading(false);
