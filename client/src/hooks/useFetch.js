@@ -24,16 +24,6 @@ export default function useFetch(route, onReceived) {
     controller.abort();
   }
 
-  if (route.includes("api/")) {
-    /**
-     * We add this check here to provide a better error message if you accidentally add the api part
-     * As an error that happens later because of this can be very confusing!
-     */
-    throw Error(
-      "when using the useFetch hook, the route should not include the /api/ part",
-    );
-  }
-
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
