@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import useFetch from "../../hooks/useFetch";
 import useAlert from "../../hooks/useAlert";
 import { gif } from "../../assets/index.js";
@@ -13,7 +13,7 @@ export default function AIPopup({ setShowAll, onClose, setAiSkills }) {
   const { alert, setAlert, clearAlert, delayedClearAlert } = useAlert();
   const isCVRef = useRef(true);
 
-  const { isLoading, error, performFetch } = useFetch(
+  const { isLoading, performFetch } = useFetch(
     "/ai/assist-skills",
     (result) => {
       if (
@@ -59,17 +59,14 @@ export default function AIPopup({ setShowAll, onClose, setAiSkills }) {
         setAiSkills([]);
       }
     },
-  );
-
-  useEffect(() => {
-    if (error) {
+    (errorMessage) => {
       setAlert({
         type: "error",
-        message: error?.message || "AI service returned an error.",
+        message: String(errorMessage || "AI service returned an error."),
       });
       delayedClearAlert();
-    }
-  }, [error]);
+    },
+  );
 
   async function handleGetSkills(isCV) {
     clearAlert();

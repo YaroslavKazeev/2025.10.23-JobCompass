@@ -9,37 +9,13 @@ import { useState } from "react";
  * Our hook will give you an object with the properties:
  *
  * isLoading - true if the fetch is still in progress
- * error - will contain an Error object if something went wrong
  * performFetch - this function will trigger the fetching. It is up to the user of the hook to determine when to do this!
- * cancelFetch - this function will cancel the fetch, call it when your component is unmounted
  */
-export default function useFetch(route, onReceived) {
-  /**
-   * We use the AbortController which is supported by all modern browsers to handle cancellations
-   * For more info: https://developer.mozilla.org/en-US/docs/Web/API/AbortController
-   */
-  const controller = new AbortController();
-  const signal = controller.signal;
-  function cancelFetch() {
-    controller.abort();
-  }
-
-  if (route.includes("api/")) {
-    /**
-     * We add this check here to provide a better error message if you accidentally add the api part
-     * As an error that happens later because of this can be very confusing!
-     */
-    throw Error(
-      "when using the useFetch hook, the route should not include the /api/ part",
-    );
-  }
-
-  const [error, setError] = useState(null);
+export default function useFetch(route, onReceived, onError = () => {}) {
   const [isLoading, setIsLoading] = useState(false);
 
   // Add any args given to the function to the fetch function
   function performFetch(options) {
-    setError(null);
     setIsLoading(true);
 
     const isFormData = options?.body instanceof FormData;
@@ -64,44 +40,23 @@ export default function useFetch(route, onReceived) {
 
       try {
         const url = `/api${route}`;
-        const res = await fetch(url, { ...baseOptions, ...options, signal });
-        const contentType = res.headers.get("content-type") || "";
-        const rawText = await res.text();
-        const hasBody = rawText.trim().length > 0;
-
+        const res = await fetch(url, { ...baseOptions, ...options });
         let jsonResult = null;
-        if (hasBody && contentType.includes("application/json")) {
-          try {
-            jsonResult = JSON.parse(rawText);
-          } catch {
-            console.error("Non-JSON body in response for URL:", url);
-          }
+        try {
+          jsonResult = await res.json();
+        } catch (err) {
+          console.error("Error parsing JSON response for URL:", url, err);
         }
 
-        if (!res.ok) {
-          setError(
-            (jsonResult && jsonResult.msg) ||
-              (hasBody ? rawText : null) ||
-              `Fetch for ${url} returned an invalid status (${res.status})`,
-          );
-          setIsLoading(false);
-          return;
-        }
-
-        if (jsonResult && jsonResult.success === true) {
+        if (jsonResult?.success) {
           onReceived(jsonResult);
         } else {
-          setError(
-            (jsonResult && jsonResult.msg) ||
-              `The result from our backend did not have an error message. Received: ${JSON.stringify(
-                jsonResult ?? rawText,
-              )}`,
-          );
+          onError(jsonResult?.msg || "The backend returned an error");
         }
 
         setIsLoading(false);
       } catch (error) {
-        setError(error.message || "An error occurred during fetch");
+        onError(error?.message || "An error occurred during fetch");
         setIsLoading(false);
       }
     }
@@ -109,5 +64,5 @@ export default function useFetch(route, onReceived) {
     fetchData();
   }
 
-  return { isLoading, error, performFetch, cancelFetch };
+  return { isLoading, performFetch };
 }

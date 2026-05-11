@@ -35,24 +35,21 @@ function UserContextProvider({ children }) {
     setMessage(null);
   }
 
-  const {
-    isLoading: isMeLoading,
-    error: fetchMeError,
-    performFetch: performFetchMe,
-  } = useFetch("/users/me", handleFetchMeResults);
+  const { isLoading: isMeLoading, performFetch: performFetchMe } = useFetch(
+    "/users/me",
+    handleFetchMeResults,
+    (errorMessage) => {
+      // "No token provided" is expected when browsing as a guest, so avoid noisy logs.
+      if (errorMessage !== "No token provided") {
+        console.error("Error fetching current user:", errorMessage);
+      }
+      dispatch({ type: "LOGOUT" });
+    },
+  );
 
   useEffect(() => {
     performFetchMe({ credentials: "include" });
   }, []);
-
-  useEffect(() => {
-    if (!fetchMeError) return;
-    // "No token provided" is expected when browsing as a guest, so avoid noisy logs.
-    if (fetchMeError !== "No token provided") {
-      console.error("Error fetching current user:", fetchMeError);
-    }
-    dispatch({ type: "LOGOUT" });
-  }, [fetchMeError]);
 
   return (
     <UserContext.Provider

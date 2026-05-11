@@ -36,8 +36,6 @@ export default function OpenPositions() {
     allJobs,
     searchString,
     isJobsLoading,
-    jobFetchError,
-    travelFetchError,
     serverMessage,
     setServerMessage,
   } = UseJobs();
@@ -63,18 +61,15 @@ export default function OpenPositions() {
   ]);
 
   useEffect(() => {
-    if (jobFetchError) {
-      setAlert({ type: "error", message: String(jobFetchError) });
-      delayedClearAlert();
-    } else if (travelFetchError) {
-      setAlert({ type: "error", message: String(travelFetchError) });
-      delayedClearAlert();
-    } else if (serverMessage) {
-      setAlert({ type: "info", message: serverMessage });
-      setServerMessage("");
+    if (serverMessage?.message) {
+      setAlert({
+        type: serverMessage.type || "info",
+        message: serverMessage.message,
+      });
+      setServerMessage(null);
       delayedClearAlert();
     }
-  }, [jobFetchError, travelFetchError, serverMessage, setServerMessage]);
+  }, [serverMessage, setServerMessage]);
 
   const jobsWithSkills = useMemo(() => {
     return allJobs.map((job) => {

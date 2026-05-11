@@ -47,7 +47,7 @@ export default function mapUserFromJoinRows(
     ...(includeDonation
       ? {
           time_to_donate:
-            userDataRow.number_of_logins + 1 === 5
+            (userDataRow.number_of_logins + 1) % 5 === 0
               ? process.env.DONATION_URL
               : false,
         }

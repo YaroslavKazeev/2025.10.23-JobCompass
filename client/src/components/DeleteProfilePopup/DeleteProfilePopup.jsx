@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { UseUser } from "../../context/UserContext";
 import "./DeleteProfilePopup.css";
 import useFetch from "../../hooks/useFetch";
@@ -8,7 +7,7 @@ import handleKeyDown from "../../util/handleKeyDown";
 export default function DeleteProfilePopup({ setShowDeletePopup }) {
   const { dispatch, setMessage } = UseUser();
 
-  const { isLoading, error, performFetch } = useFetch(
+  const { isLoading, performFetch } = useFetch(
     `/users/delete/`,
     (data) => {
       setMessage(data.msg || "Account deleted successfully!");
@@ -16,15 +15,12 @@ export default function DeleteProfilePopup({ setShowDeletePopup }) {
         dispatch({ type: "LOGOUT" });
       }, 2000);
     },
-  );
-
-  useEffect(() => {
-    if (error) {
-      console.error(error);
+    (errorMessage) => {
+      console.error(errorMessage);
       setMessage("Failed to delete account. Please try again later.");
       setShowDeletePopup(false);
-    }
-  }, [error]);
+    },
+  );
 
   return (
     <div className="profile-popup-overlay">

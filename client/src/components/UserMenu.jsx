@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { icons, gif } from "../assets";
 import { UseUser } from "../context/UserContext";
@@ -10,23 +10,19 @@ export default function UserMenu() {
   const { user, dispatch, isMeLoading, setMessage } = UseUser();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
-  const {
-    isLoading: isLogoutLoading,
-    error,
-    performFetch,
-  } = useFetch("/users/logout", (data) => {
-    setMessage(data.msg);
-    dispatch({ type: "LOGOUT" });
-  });
+  const { isLoading: isLogoutLoading, performFetch } = useFetch(
+    "/users/logout",
+    (data) => {
+      setMessage(data.msg);
+      dispatch({ type: "LOGOUT" });
+    },
+    (errorMessage) => {
+      console.error("Error logging out:", errorMessage);
+      setMessage(String(errorMessage));
+    },
+  );
 
   useOutsideClick(menuRef, () => setIsOpen(false));
-
-  useEffect(() => {
-    if (error) {
-      console.error("Error logging out:", error);
-      setMessage(String(error));
-    }
-  }, [error]);
 
   return (
     <div className="user-menu" ref={menuRef}>

@@ -1,5 +1,5 @@
 // React imports
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 // Context, Component imports
 import { UseUser } from "../../context/UserContext";
@@ -31,20 +31,14 @@ export default function SkillsSettings() {
   const handleSkillsResultsRef = useRef(() => {});
   const [aiSkills, setAiSkills] = useState([]);
 
-  const {
-    isLoading,
-    error: fetchError,
-    performFetch,
-  } = useFetch("/users/change-skills", (result) =>
-    handleSkillsResultsRef.current(result),
-  );
-
-  useEffect(() => {
-    if (fetchError) {
-      setAlert({ type: "error", message: String(fetchError) });
+  const { isLoading, performFetch } = useFetch(
+    "/users/change-skills",
+    (result) => handleSkillsResultsRef.current(result),
+    (errorMessage) => {
+      setAlert({ type: "error", message: String(errorMessage) });
       delayedClearAlert();
-    }
-  }, [fetchError]);
+    },
+  );
 
   function prepareSkillsUpdate(
     nextSkills,

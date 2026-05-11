@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -24,19 +24,16 @@ export default function ResetPasswordForm() {
   const [showNewPass, setShowNewPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
 
-  const { isLoading, error, performFetch } = useFetch(
+  const { isLoading, performFetch } = useFetch(
     "/users/reset-password",
     () => setResetSuccess(true),
+    (errorMessage) => {
+      setResetSuccess(false);
+      setAlert({ type: "error", message: String(errorMessage) });
+      delayedClearAlert();
+    },
   );
 
-  useEffect(() => {
-    if (error) {
-      const reset = () => setResetSuccess(false);
-      reset();
-      setAlert({ type: "error", message: String(error) });
-      delayedClearAlert();
-    }
-  }, [error, setAlert, delayedClearAlert]);
   async function handleSubmit(e) {
     e.preventDefault();
     if (!token) {
