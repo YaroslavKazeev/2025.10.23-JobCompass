@@ -49,6 +49,7 @@
   },
   "homepage": "https://github.com/YaroslavKazeev/2025.10.23-JobCompass",
   "devDependencies": {
+    "baseline-browser-mapping": "^2.10.38",
     "husky": "^9.0.0"
   },
   "dependencies": {
