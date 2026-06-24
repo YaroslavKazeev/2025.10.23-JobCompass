@@ -4,7 +4,7 @@ import connectNeonDB from "../db/connectNeonDB.js";
 import { v4 as uuidv4 } from "uuid";
 
 import validationErrorMessage from "../util/validationErrorMessage.js";
-import { blacklistedTokens } from "../middleware/authVerify.js";
+import { addTokenToBlacklist } from "../middleware/authVerify.js";
 import validateUserRegistration from "../util/validateUserRegistration.js";
 import updateUserProfile from "./profile.js";
 import uploadImage from "../services/ImageUpload.js";
@@ -198,11 +198,10 @@ export async function loginUser(req, res, next) {
 
 export async function logoutUser(req, res, next) {
   try {
-    // Extract token from "Bearer <token>" header
     const token = req.cookies?.token;
-    if (!token) return next(createHttpError(400, "No token provided")); // Add the token to the in-memory blacklist
+    if (!token) return next(createHttpError(400, "No token provided"));
 
-    blacklistedTokens.push(token);
+    addTokenToBlacklist(token);
     res.clearCookie("token");
 
     res.json({ success: true, msg: "Logged out successfully" });
